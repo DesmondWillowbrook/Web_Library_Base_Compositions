@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<!--Bootstrap stuff-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+
+		<title>Library Base Compositions Web App</title>
+	</head>
+	<body>
+		<noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>    
+		<script src="./bootstrap.js"></script>
+		<!--
+		*TODO*
+		<script>
+			// HACK/TODO: To capture error traces from WASM
+			// this is the easy way, hard way is to go through library
+			// and Resultify everything
+			
+			console.defaultError = console.error.bind(console);
+			console.errors = [];
+			console.error = function(){
+					// default &  console.error()
+					console.defaultError.apply(console, arguments);
+					// new & array data
+					console.errors.push(Array.from(arguments));
+			}
+		</script>
+		-->
+
+		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+			<a class="navbar-brand" href="/">fastq.bio</a>
+			<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+				<ul class="navbar-nav mr-auto"></ul>
+				<ul class="navbar-nav">
+					<li class="nav-item active">
+						<a class="nav-link" href="https://github.com/robertaboukhalil/fastq.bio">Code</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<main role="main">
+			<div class="jumbotron mt-4 pb-3">
+				<div class="container">
+					<h2 class="display-5">&#x1f9ec;&nbsp; Peek at Your Sequencing Data</h2>
+					<p class="lead">Quickly generate data quality reports for FASTQ files. Your data never leaves the browser.</p>
+				</div>
+			</div>
+		
+			<div class="container">
+		<div class="row">
+			<!--Explanation row-->
+			<div id="info-div" class="col-sm-4 well">
+						<p>
+							Library Base Compositions is a tool to extract base compositions from FASTQ files.
+							To use, simply select your FASTQ file and then watch the magic happen.
+						</p>
+			</div>
+			<!--Input row-->
+			<div id="input-div" class="col-sm-4">
+				<form id="input-form" action="#">
+					<div class="input-group form-group">
+						<div id="target-arg-help" class="input-group-prepend">
+							<span class="input-group-text">Target Read Count</span>
+						</div>
+						<input type="number" class="form-control" id="arg-target" aria-label="Target Read Count" aria-describedby="target-arg-help" min="1" value="100" required>
+						<small id="target-arg-help" class="form-text text-muted">Number of reads to sample from file.</small>
+					</div>
+
+					<div class="input-group form-group">
+						<div id="trim-arg-help" class="input-group-prepend">
+							<span class="input-group-text">Trim Length</span>
+						</div>
+						<input type="number" class="form-control" id="arg-trim" aria-label="Trim Length" aria-describedby="trim-arg-help" min="1">
+						<small id="trim-arg-help" class="form-text text-muted">Controls how much FASTQ reads are trimmed before processing.</small>
+					</div>
+
+					<div class="input-group form-group">
+						<div id="phred-arg-help" class="input-group-prepend">
+							<span class="input-group-text">Min Phred Score</span>
+						</div>
+						<input type="number" class="form-control" id="arg-phred" aria-label="Min Phred Score" aria-describedby="phred-arg-help" min="0" value="0" required>
+						<small id="phred-arg-help" class="form-text text-muted">Minimum Phred score for read to be considered.</small>
+					</div>
+
+					<div class="input-group form-group">
+						<div id="n-arg-help" class="input-group-prepend">
+							<span class="input-group-text">Max N Content</span>
+						</div>
+						<input type="number" class="form-control" id="arg-n" aria-label="Max N Content" aria-describedby="n-arg-help">
+						<small id="n-arg-help" class="form-text text-muted">Maximum N-content a read can have to be processed.</small>
+					</div>
+
+					<div class="form-group">
+						<input type="file" id="file-selector" data-browse-on-zone-click="true" class="form-control form-control-lg" required>
+					</div>
+
+					<button type="submit" class="btn btn-primary" id="input-submit">Submit</button>
+				</form>
+			</div>
+
+			<!--Output row-->
+			<div id="output-div" class="col-sm-4">
+				<p id="result_para"></p>
+				<pre id="output">output comes here!</pre>
+			</div>
+		</div>
+
+		<div id="footer">
+				Made with ❤️ using WASM, Rust, Wasm_Bindgen (A Rust Package) by Kartavya Vashishtha
+		</div>
+	</body>
+</html>
+
+<style>
+h6 {
+	padding-bottom: 5px;
+	border-bottom: 1px solid #eee;
+}
+code {
+	line-height: 1.1;
+}
+</style>
