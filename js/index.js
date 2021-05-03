@@ -1,5 +1,3 @@
-import * as wasm from "../pkg/rust_webpack_template";
-
 function processFile (file, args) {
 	const fileReader = new FileReader();
 	fileReader.onload = (event) => {
@@ -41,5 +39,15 @@ function run() {
 	);
 }
 
-document.getElementById('input-form').addEventListener('submit', run);
-console.debug("Loaded event listener to input-form");
+const wasm = import("../pkg/index").then(
+	() => {
+		document.getElementById('input-form').disabled = false;
+		document.getElementById('input-submit').innerHTML = "Run";
+
+		document.getElementById('input-form').addEventListener('submit', run);
+		console.debug("Loaded event listener to input-form");
+	}
+);
+
+document.getElementById('input-form').disabled = true;
+document.getElementById('input-submit').innerHTML = "Loading WASM...";
