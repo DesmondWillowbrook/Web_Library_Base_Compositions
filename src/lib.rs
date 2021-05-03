@@ -30,7 +30,7 @@ pub mod test_utils {
 pub mod io_utils {
     use wasm_bindgen::prelude::*;
         
-    #[wasm_bindgen(module = "/exports.js")]
+    #[wasm_bindgen(module = "/js/exports.js")]
     //#[link(wasm_import_module = "/web_library_base_compositions.js")]
     extern "C" {
         pub fn read_file() -> String; 
