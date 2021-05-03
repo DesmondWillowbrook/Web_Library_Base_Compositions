@@ -1,4 +1,4 @@
-import * as wasm from "web-library-base-compositions-w-bundler";
+import * as wasm from "../pkg/rust_webpack_template";
 
 function processFile (file, args) {
 	const fileReader = new FileReader();
