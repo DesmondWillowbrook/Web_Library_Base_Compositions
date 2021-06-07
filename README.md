@@ -4,8 +4,10 @@
 
 ## Quickstart
 <small><a href="https://rustwasm.github.io/docs/wasm-pack/tutorials/hybrid-applications-with-webpack/using-your-library.html">Reference</a></small>
-```
+```bash
+npm install # Only on first use
 npm run build
+wasm-pack build # When rust code / binding code edited
 npm start
 ```
 
