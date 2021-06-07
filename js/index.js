@@ -2,7 +2,9 @@ const wasm = import("../pkg/index").then((wasm) => {
 	function processFile (file, args) {
 		const fileReader = new FileReader();
 		fileReader.onload = (event) => {
+			// move info so it is visible to exported read_file function
 			window.readFileString = event.target.result;
+
 			console.info("Starting processing... Calling into Rust module.");
 	
 			let result = wasm.run_json_exported(args);

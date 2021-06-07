@@ -70,7 +70,6 @@ pub mod io_utils {
     }
 
     // Reader is a wrapper over BufRead
-    // Takes in a PathBuf and open it or if no PathBuf is provided, opens up stdin
     // And provides an interface over the actual reading.
     pub fn get_reader() -> Box<dyn BufRead> {
         Box::new(BufReader::new(WasmMemBuffer::new()))
