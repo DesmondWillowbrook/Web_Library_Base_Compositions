@@ -31,23 +31,20 @@ function run() {
 	processFile (
 		file,
 		new wasm.SampleArgs (
-			BigInt (document.getElementById('arg-target').value),
-			document.getElementById('arg-phred').value,
-			document.getElementById('arg-n').value,
-			document.getElementById('arg-trim').value
+			BigInt (100),
+			0,
+			null,
+			50
 		),
 	);
 }
 
 const wasm = import("../pkg/index").then(
 	() => {
-		document.getElementById('input-form').disabled = false;
-		document.getElementById('input-submit').innerHTML = "Run";
-
-		document.getElementById('input-form').addEventListener('submit', run);
+		document.getElementById('file-selector').disabled = false;
+		document.getElementById('file-selector').addEventListener('change', run);
 		console.debug("Loaded event listener to input-form");
 	}
 );
 
-document.getElementById('input-form').disabled = true;
-document.getElementById('input-submit').innerHTML = "Loading WASM...";
+document.getElementById('file-selector').disabled = true;
