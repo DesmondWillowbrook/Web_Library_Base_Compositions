@@ -144,9 +144,6 @@ impl BaseCompColBases {
         IntoIterator::into_iter(IterableBaseCompColBases::from(self))
     }
 
-    pub fn new() -> BaseCompColBases {
-        BaseCompColBases {A: 0, G: 0, T: 0, C: 0, N: 0}
-    }
 
     pub fn percentage (&mut self) {
         let sum = self.iter().sum::<usize>() as f64;
