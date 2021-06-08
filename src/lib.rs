@@ -29,11 +29,14 @@ pub mod test_utils {
 
 pub mod io_utils {
     use wasm_bindgen::prelude::*;
+    use web_sys::{Blob, File, FileReader};
+    use wasm_bindgen::JsCast;
+    use futures::executor::block_on;
         
     #[wasm_bindgen(module = "/js/exports.js")]
     //#[link(wasm_import_module = "/web_library_base_compositions.js")]
     extern "C" {
-        pub fn read_file() -> String; 
+        pub fn get_file() -> File; 
     }
 
     #[wasm_bindgen]
@@ -46,26 +49,52 @@ pub mod io_utils {
 
     // Credit to: mstange on GitHub
     // See: https://github.com/rustwasm/wasm-bindgen/issues/1079#issuecomment-508577627
+
     #[derive(Debug)]
-    pub struct WasmMemBuffer {pos: usize, pub buf: Vec<u8>}
+    pub struct WasmMemBuffer {file: File, pos: i32}
 
     impl WasmMemBuffer {
+        #![allow(unused_unsafe)]
+
         pub fn new() -> WasmMemBuffer {
-            let buf = unsafe {read_file().into_bytes()};
-            WasmMemBuffer {pos: 0, buf}
+            WasmMemBuffer {file: unsafe {get_file()}, pos: 0}
+        }
+
+        // Also credit to: PolyMeilex on GitHub
+        // See: https://github.com/PolyMeilex/rfd/blob/e50c9928c00909fda5105b80ff509597ef9fb5d4/src/file_handle/web.rs
+        async fn read_core (&mut self, buf: &mut [u8]) -> io::Result<usize> {
+            let sl = self.file.slice_with_i32_and_i32(self.pos, self.pos + buf.len() as i32).unwrap();
+
+            let promise = js_sys::Promise::new(&mut move |res, _rej| {
+                let file_reader = FileReader::new().unwrap();
+    
+                let fr = file_reader.clone();
+                let closure = Closure::wrap(Box::new(move || {
+                    res.call1(&JsValue::undefined(), &fr.result().unwrap())
+                        .unwrap();
+                }) as Box<dyn FnMut()>);
+    
+                file_reader.set_onload(Some(closure.as_ref().unchecked_ref()));
+    
+                closure.forget();
+    
+                file_reader.read_as_array_buffer(&sl).unwrap();
+            });
+    
+            let future = wasm_bindgen_futures::JsFuture::from(promise);
+            let res = future.await.unwrap();
+            let arr: js_sys::Uint8Array = js_sys::Uint8Array::new(&res);
+            
+            self.pos += buf.len() as i32;
+            arr.copy_to(buf);
+
+            Ok(arr.length() as usize)
         }
     }
 
     impl Read for WasmMemBuffer {
         fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-            let slice_end = std::cmp::min(buf.len(), self.buf.len() - self.pos);
-
-            buf[..slice_end].copy_from_slice(&self.buf[self.pos..(slice_end + self.pos)]);
-
-            unsafe {debug ( format!("reading from section {} to section {}, buffer is: {:?}", self.pos, (slice_end + self.pos), &self.buf[self.pos..(slice_end + self.pos)]).as_ref());}
-
-            self.pos += slice_end;
-            Ok(slice_end)
+            block_on(self.read_core(buf))
         }
     }
 

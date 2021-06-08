@@ -1,5 +1,5 @@
-function read_file (arr) {
-	return window.readFileString;
+function get_file () {
+	return window.SharedReadFile;
 }
 
-export {read_file};
+export {get_file};

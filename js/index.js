@@ -1,28 +1,24 @@
 const wasm = import("../pkg/index").then((wasm) => {
 	function processFile (file, args) {
-		const fileReader = new FileReader();
-		fileReader.onload = (event) => {
-			// move info so it is visible to exported read_file function
-			window.readFileString = event.target.result;
+		// move info so it is visible to exported read_file function
+		window.SharedReadFile = file;
 
-			console.info("Starting processing... Calling into Rust module.");
-	
-			let result = wasm.run_json_exported(args);
-			let info_string = `Processed ${result.get_processed_num()} reads.\nJSON output:`;
-			let output_string = result.get_output();
+		console.info("Starting processing... Calling into Rust module.");
 
-			// creates result_entry onto which both items are appended
-			var result_entry = document.createElement('li');
-			result_entry.appendChild(document.createTextNode(info_string));
-			let output_node = document.createElement('pre');
-			output_node.innerText = output_string;
+		let result = wasm.run_json_exported(args);
+		let info_string = `Processed ${result.get_processed_num()} reads.\nJSON output:`;
+		let output_string = result.get_output();
 
-			// then result_entry is appended into output list
-			result_entry.appendChild(output_node);
-	
-			document.getElementById('output-list').appendChild(result_entry);
-		};
-		fileReader.readAsText(file);
+		// creates result_entry onto which both items are appended
+		var result_entry = document.createElement('li');
+		result_entry.appendChild(document.createTextNode(info_string));
+		let output_node = document.createElement('pre');
+		output_node.innerText = output_string;
+
+		// then result_entry is appended into output list
+		result_entry.appendChild(output_node);
+
+		document.getElementById('output-list').appendChild(result_entry);
 	}
 	
 	function run() {
