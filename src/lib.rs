@@ -28,7 +28,9 @@ pub mod test_utils {
 }
 
 pub mod io_utils {
+    use js_sys::ArrayBuffer;
     use wasm_bindgen::prelude::*;
+    use web_sys::File;
         
     #[wasm_bindgen(module = "/js/exports.js")]
     //#[link(wasm_import_module = "/web_library_base_compositions.js")]
@@ -40,6 +42,9 @@ pub mod io_utils {
     extern "C" {
         #[wasm_bindgen(js_namespace = console)]
         pub fn debug(msg: &str);
+
+        #[wasm_bindgen(js_namespace = FileReaderSync)]
+        pub fn readAsArrayBuffer(b: File) -> ArrayBuffer;
     }
     use std::io::{self, BufRead, BufReader, Read};
 
