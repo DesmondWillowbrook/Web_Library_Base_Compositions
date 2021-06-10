@@ -16,6 +16,8 @@ module.exports = {
   },
   devServer: {
     contentBase: dist,
+    open: true,
+    openPage: "Web_Library_Base_Compositions/"
   },
   plugins: [
     new CopyPlugin([
