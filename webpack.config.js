@@ -24,5 +24,13 @@ module.exports = {
     new WasmPackPlugin({
       crateDirectory: __dirname,
     }),
-  ]
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.worker\.js$/,
+        use: { loader: "worker-loader" },
+      },
+    ],
+  },
 };

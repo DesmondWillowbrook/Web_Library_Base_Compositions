@@ -28,14 +28,14 @@ pub mod test_utils {
 }
 
 pub mod io_utils {
-    use js_sys::ArrayBuffer;
+    use js_sys::{ArrayBuffer, Uint8Array};
     use wasm_bindgen::prelude::*;
-    use web_sys::File;
+    use gloo::file::File;
         
     #[wasm_bindgen(module = "/js/exports.js")]
     //#[link(wasm_import_module = "/web_library_base_compositions.js")]
     extern "C" {
-        pub fn read_file() -> String; 
+        pub fn get_file() -> web_sys::File; 
     }
 
     #[wasm_bindgen]
@@ -43,8 +43,13 @@ pub mod io_utils {
         #[wasm_bindgen(js_namespace = console)]
         pub fn debug(msg: &str);
 
-        #[wasm_bindgen(js_namespace = FileReaderSync)]
-        pub fn readAsArrayBuffer(b: File) -> ArrayBuffer;
+        type FileReaderSync;
+
+        #[wasm_bindgen(constructor)]
+        fn new() -> FileReaderSync;
+
+        #[wasm_bindgen(method)]
+        fn readAsArrayBuffer(this: &FileReaderSync, blob: &web_sys::File) -> ArrayBuffer;
     }
     use std::io::{self, BufRead, BufReader, Read};
 
@@ -52,25 +57,39 @@ pub mod io_utils {
     // Credit to: mstange on GitHub
     // See: https://github.com/rustwasm/wasm-bindgen/issues/1079#issuecomment-508577627
     #[derive(Debug)]
-    pub struct WasmMemBuffer {pos: usize, pub buf: Vec<u8>}
+    pub struct WasmMemBuffer {pos: u64, file: File}
+
+/*
+        pub fn new() -> WasmMemBuffer {
+            WasmMemBuffer {file: File::from(unsafe {get_file()}), pos: 0}
+        }
+            let sl = self.file.slice(self.pos, self.pos + buf.len() as u64);
+
+                let arr = arr.unwrap();
+                static_buf.copy_from_slice(&arr[..buf.len()]);
+
+            unsafe {debug("Loaded file")};
+            self.pos += buf.len() as u64;
+            Ok(0)
+*/
 
     impl WasmMemBuffer {
         pub fn new() -> WasmMemBuffer {
-            let buf = unsafe {read_file().into_bytes()};
-            WasmMemBuffer {pos: 0, buf}
+            WasmMemBuffer {file: File::from(unsafe {get_file()}), pos: 0}
         }
     }
 
     impl Read for WasmMemBuffer {
         fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-            let slice_end = std::cmp::min(buf.len(), self.buf.len() - self.pos);
+            let fr = FileReaderSync::new();
+            let sl = self.file.slice(self.pos, self.pos + buf.len() as u64);
+            let arr: Vec<u8> = Uint8Array::new(unsafe {&fr.readAsArrayBuffer(sl.as_ref())}).to_vec();
+            let len = std::cmp::min(buf.len(), arr.len());
 
-            buf[..slice_end].copy_from_slice(&self.buf[self.pos..(slice_end + self.pos)]);
+            buf[..len].copy_from_slice(&arr[..len]);
 
-            unsafe {debug ( format!("reading from section {} to section {}, buffer is: {:?}", self.pos, (slice_end + self.pos), &self.buf[self.pos..(slice_end + self.pos)]).as_ref());}
-
-            self.pos += slice_end;
-            Ok(slice_end)
+            self.pos += buf.len() as u64;
+            Ok(len)
         }
     }
 

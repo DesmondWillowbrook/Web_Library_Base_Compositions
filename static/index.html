@@ -12,30 +12,15 @@
 	<body>
 		<noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>    
 		<script src="index.js"></script>
-		<!--
-		*TODO*
-		<script>
-			// HACK/TODO: To capture error traces from WASM
-			// this is the easy way, hard way is to go through library
-			// and Resultify everything
-			
-			console.defaultError = console.error.bind(console);
-			console.errors = [];
-			console.error = function(){
-					// default &  console.error()
-					console.defaultError.apply(console, arguments);
-					// new & array data
-					console.errors.push(Array.from(arguments));
-			}
-		</script>
+
 		-->
 		<div class="row">
 			<!--Explanation row-->
 			<div id="info-div" class="col-sm-4 well">
-						<p>
-							Library Base Compositions is a tool to extract base compositions from FASTQ files.
-							To use, simply select your FASTQ file and then watch the magic happen.
-						</p>
+				<p>
+					Library Base Compositions is a tool to extract base compositions from FASTQ files.
+					To use, simply select your FASTQ file and then watch the magic happen.
+				</p>
 			</div>
 			<!--Input row-->
 			<div id="input-div" class="col-sm-4">

@@ -1,5 +1,5 @@
-function read_file (arr) {
-	return window.readFileString;
+function get_file (arr) {
+	return self.readFile;
 }
 
-export {read_file};
+export {get_file};
