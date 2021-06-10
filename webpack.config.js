@@ -11,7 +11,8 @@ module.exports = {
   },
   output: {
     path: dist,
-    filename: "[name].js"
+    filename: "[name].js",
+    publicPath: "/Web_Library_Base_Compositions/",
   },
   devServer: {
     contentBase: dist,
