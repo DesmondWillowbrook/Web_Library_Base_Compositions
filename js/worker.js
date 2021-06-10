@@ -16,7 +16,8 @@ onmessage = async function(e) {
 		null,
 		50
 	);
-	let result = wasm.run_json_exported(args);
+	
+	let result = wasm.run_json_exported(args, "application/x-gzip" == file.type);
 
 	console.log('Posting message back to main script');
 	postMessage([result.get_processed_num(), result.get_output()]);

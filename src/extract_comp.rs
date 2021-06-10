@@ -222,15 +222,15 @@ impl Output {
 }
 
 #[wasm_bindgen]
-pub fn run_json_exported (sample_args: SampleArgs) -> Output {
-    let fastq_reader = FASTQReader::new(sample_args, get_reader());
+pub fn run_json_exported (sample_args: SampleArgs, compressed: bool) -> Output {
+    let fastq_reader = FASTQReader::new(sample_args, get_reader(compressed));
     let (out, processed_num) = run_json (fastq_reader);
     Output {processed_num, out}
 }
 
 #[wasm_bindgen]
-pub fn run_csv_exported (sample_args: SampleArgs) -> Output {
-    let fastq_reader = FASTQReader::new(sample_args, get_reader());
+pub fn run_csv_exported (sample_args: SampleArgs, compressed: bool) -> Output {
+    let fastq_reader = FASTQReader::new(sample_args, get_reader(compressed));
     let (out, processed_num) = run_csv (fastq_reader);
     Output {processed_num, out}
 }

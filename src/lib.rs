@@ -28,6 +28,8 @@ pub mod test_utils {
 }
 
 pub mod io_utils {
+    #[allow(unused_unsafe)]
+    
     use js_sys::{ArrayBuffer, Uint8Array};
     use wasm_bindgen::prelude::*;
     use gloo::file::File;
@@ -59,20 +61,6 @@ pub mod io_utils {
     #[derive(Debug)]
     pub struct WasmMemBuffer {pos: u64, file: File}
 
-/*
-        pub fn new() -> WasmMemBuffer {
-            WasmMemBuffer {file: File::from(unsafe {get_file()}), pos: 0}
-        }
-            let sl = self.file.slice(self.pos, self.pos + buf.len() as u64);
-
-                let arr = arr.unwrap();
-                static_buf.copy_from_slice(&arr[..buf.len()]);
-
-            unsafe {debug("Loaded file")};
-            self.pos += buf.len() as u64;
-            Ok(0)
-*/
-
     impl WasmMemBuffer {
         pub fn new() -> WasmMemBuffer {
             WasmMemBuffer {file: File::from(unsafe {get_file()}), pos: 0}
@@ -93,10 +81,15 @@ pub mod io_utils {
         }
     }
 
+    use flate2::read::GzDecoder;
     // Reader is a wrapper over BufRead
     // And provides an interface over the actual reading.
-    pub fn get_reader() -> Box<dyn BufRead> {
-        Box::new(BufReader::new(WasmMemBuffer::new()))
+    pub fn get_reader(compressed: bool) -> Box<dyn BufRead> {
+        Box::new(BufReader::new(    
+            if compressed {
+                Box::new(GzDecoder::new(WasmMemBuffer::new()))
+            } else {Box::new(WasmMemBuffer::new()) as Box<dyn Read>}
+        ))
     }
 }
 
