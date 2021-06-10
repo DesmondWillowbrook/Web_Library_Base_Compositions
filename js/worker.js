@@ -11,7 +11,7 @@ onmessage = async function(e) {
 	self.readFile = file;
 
 	const args = new wasm.SampleArgs (
-		BigInt (100),
+		BigInt (100000),
 		0,
 		null,
 		50
