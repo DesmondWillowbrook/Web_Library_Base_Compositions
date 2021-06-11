@@ -30,9 +30,10 @@ pub mod test_utils {
 pub mod io_utils {
     #[allow(unused_unsafe)]
     
-    use js_sys::{ArrayBuffer, Uint8Array};
+    use js_sys::Uint8Array;
     use wasm_bindgen::prelude::*;
     use gloo::file::File;
+    use web_sys::FileReaderSync;
         
     #[wasm_bindgen(module = "/js/exports.js")]
     //#[link(wasm_import_module = "/web_library_base_compositions.js")]
@@ -44,14 +45,6 @@ pub mod io_utils {
     extern "C" {
         #[wasm_bindgen(js_namespace = console)]
         pub fn debug(msg: &str);
-
-        type FileReaderSync;
-
-        #[wasm_bindgen(constructor)]
-        fn new() -> FileReaderSync;
-
-        #[wasm_bindgen(method)]
-        fn readAsArrayBuffer(this: &FileReaderSync, blob: &web_sys::File) -> ArrayBuffer;
     }
     use std::io::{self, BufRead, BufReader, Read};
 
@@ -69,9 +62,9 @@ pub mod io_utils {
 
     impl Read for WasmMemBuffer {
         fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-            let fr = FileReaderSync::new();
+            let fr = FileReaderSync::new().unwrap();
             let sl = self.file.slice(self.pos, self.pos + buf.len() as u64);
-            let arr: Vec<u8> = Uint8Array::new(unsafe {&fr.readAsArrayBuffer(sl.as_ref())}).to_vec();
+            let arr: Vec<u8> = Uint8Array::new(unsafe {&fr.read_as_array_buffer(sl.as_ref()).unwrap()}).to_vec();
             let len = std::cmp::min(buf.len(), arr.len());
 
             buf[..len].copy_from_slice(&arr[..len]);
