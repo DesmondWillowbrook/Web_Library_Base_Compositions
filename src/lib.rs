@@ -64,13 +64,13 @@ pub mod io_utils {
         fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
             let fr = FileReaderSync::new().unwrap();
             let sl = self.file.slice(self.pos, self.pos + buf.len() as u64);
-            let arr: Vec<u8> = Uint8Array::new(unsafe {&fr.read_as_array_buffer(sl.as_ref()).unwrap()}).to_vec();
-            let len = std::cmp::min(buf.len(), arr.len());
+            let arr = Uint8Array::new(unsafe {&fr.read_as_array_buffer(sl.as_ref()).unwrap()});
+            let len = std::cmp::min(buf.len(), arr.length() as usize);
 
-            buf[..len].copy_from_slice(&arr[..len]);
+            arr.slice(0, len as u32).copy_to(&mut buf[..len]);
 
-            self.pos += buf.len() as u64;
-            Ok(len)
+            self.pos += len as u64;
+            Ok(len as usize)
         }
     }
 
