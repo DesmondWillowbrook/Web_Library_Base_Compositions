@@ -11,4 +11,6 @@ wasm-pack build # When rust code / binding code edited
 npm start
 ```
 
+[Directory explanations and complete build instructions](https://github.com/DesmondWillowbrook/Web_Library_Base_Compositions/blob/master/HOW_TO_BUILD.md)
+
 (Download [`wasm-pack`](https://rustwasm.github.io/wasm-pack/installer/), [`npm`](https://www.npmjs.com/get-npm), [`Rust, Cargo`](https://www.rust-lang.org/))
