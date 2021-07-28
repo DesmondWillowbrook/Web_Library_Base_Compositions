@@ -1,4 +1,4 @@
-use fastq2comp::extract_comp::{FASTQReader, SampleArgs as InternalSampleArgs, run_json, run_tsv};
+use fastq2comp::extract_comp::{FASTQReader, SampleArgs as InternalSampleArgs, run_json};
 
 use wasm_bindgen::prelude::wasm_bindgen;
 #[wasm_bindgen]
@@ -34,36 +34,12 @@ impl SampleArgs {
 
 use crate::{io_utils::get_reader, utils::set_panic_hook};
 
-#[wasm_bindgen]
-pub struct Output {
-    processed_num: u64,
-    out: String,
-}
-
-#[wasm_bindgen]
-impl Output {
-    #[wasm_bindgen]
-    pub fn get_output(self) -> String {self.out}
-    #[wasm_bindgen]
-    pub fn get_processed_num (&self) -> u64 {self.processed_num} 
-}
 
 // Entry points here
 #[wasm_bindgen]
-pub fn run_json_exported (sample_args: SampleArgs, compressed: bool) -> Output {
+pub fn run_json_exported (sample_args: SampleArgs, compressed: bool) -> String {
     set_panic_hook();
 
     let fastq_reader = FASTQReader::new(sample_args.into(), get_reader(compressed));
-    let (out, processed_num) = run_json (fastq_reader);
-    Output {processed_num, out}
+    run_json (fastq_reader)
 }
-
-#[wasm_bindgen]
-pub fn run_tsv_exported (sample_args: SampleArgs, compressed: bool) -> Output {
-    set_panic_hook();
-
-    let fastq_reader = FASTQReader::new(sample_args.into(), get_reader(compressed));
-    let (out, processed_num) = run_tsv (fastq_reader);
-    Output {processed_num, out}
-}
-

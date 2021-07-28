@@ -14,7 +14,7 @@ const wasm = import("../pkg/index").then((wasm) => {
 			var result_entry = document.createElement('li');
 			result_entry.appendChild(document.createTextNode(info_string));
 			let output_node = document.createElement('pre');
-			output_node.innerText = output;
+			output_node.innerText = JSON.stringify(output);
 	
 			// then result_entry is appended into output list
 			result_entry.appendChild(output_node);
