@@ -12,12 +12,12 @@ module.exports = {
   output: {
     path: dist,
     filename: "[name].js",
-    publicPath: "/Web_Library_Base_Compositions/",
+    publicPath: "/",
   },
   devServer: {
     contentBase: dist,
     open: true,
-    openPage: "Web_Library_Base_Compositions/"
+    openPage: "/"
   },
   plugins: [
     new CopyPlugin([
