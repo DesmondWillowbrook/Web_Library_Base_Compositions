@@ -6,22 +6,27 @@ const wasm = import("../pkg/index").then((wasm) => {
 
 		const wasmProcess = new Worker();
 
+		var li = document.createElement('li');
+		let status = document.createElement('p');
+		li.appendChild(status);
+		
+		status.innerText = "Processing... Should take no longer than a minute.";
+		document.getElementById('output-list').appendChild(li);
+
 		wasmProcess.onmessage = function (e) {
 			let output = e.data;
-
-			// Display JSON info
-			let info_string = `JSON output:`;
 	
-			// creates result_entry onto which both items are appended
-			var result_entry = document.createElement('li');
-			result_entry.appendChild(document.createTextNode(info_string));
-			let output_node = document.createElement('pre');
-			output_node.innerText = JSON.stringify(output);
+			let p = document.createElement('p');
+			p.innerText = 'JSON output:';
+
+			let json_out = document.createElement('pre');
+			json_out.innerText = JSON.stringify(output);
 	
 			// then result_entry is appended into output list
-			result_entry.appendChild(output_node);
-	
-			document.getElementById('output-list').appendChild(result_entry);
+			li.appendChild(p);
+			p.appendChild(json_out);
+
+			status.innerText = "Waiting on server response... May take upto 5 minutes.";
 
 			async function fetch_plot (output) {
 			// Download and display graph
@@ -32,14 +37,20 @@ const wasm = import("../pkg/index").then((wasm) => {
 					body:JSON.stringify(output),
 					method:"POST"
 				});
-				console.log(data);
-				const img = document.createElement("img");
-				img.src = URL.createObjectURL(await data.blob());
-				img.onload = function() {
-					URL.revokeObjectURL(this.src);
+				if (data.ok) {
+					console.trace(data);
+					const img = document.createElement("img");
+					img.src = URL.createObjectURL(await data.blob());
+					img.onload = function() {
+						URL.revokeObjectURL(this.src);
+					}
+	
+					li.appendChild(img);
+					status.innerText = "";
+				} else {
+					status.innerText = "Error from server response";
+					throw data;
 				}
-
-				result_entry.appendChild(img);
 			}
 			fetch_plot(output);
 		}
