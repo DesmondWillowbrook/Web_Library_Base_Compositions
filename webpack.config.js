@@ -15,9 +15,7 @@ module.exports = {
     publicPath: "/",
   },
   devServer: {
-    contentBase: dist,
     open: true,
-    openPage: "/"
   },
   plugins: [
     new CopyPlugin([
