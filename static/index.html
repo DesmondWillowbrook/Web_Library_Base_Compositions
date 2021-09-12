@@ -14,21 +14,25 @@
 		<script src="index.js"></script>
 		<link rel="stylesheet" href="index.css">
 
-		<div class="row">
+		<div class="row justify-content-center">
 			<!--Explanation row-->
-			<div id="info-div" class="col-sm-4 well">
+			<div id="info-div" class="col-10 well">
 				<p>
 					Library Base Compositions is a tool to extract base compositions from FASTQ files.
 					To use, simply select your FASTQ file and then watch the magic happen.
 				</p>
 			</div>
+		</div>
+		<div class = "row justify-content-center">
 			<!--Input row-->
-			<div id="input-div" class="col-sm-4">
+			<div class="col-10">
 				<input type="file" id="file-selector" data-browse-on-zone-click="true" class="form-control form-control-lg" multiple>
 			</div>
+		</div>
 
+		<div class = "row justify-content-center">
 			<!--Output row-->
-			<div id="output-div" class="col-sm-4">
+			<div id="output-div" class="col-10">
 				<ol id="output-list">
 					<li>
 						<p class="result_para"></p>
@@ -38,9 +42,9 @@
 			</div>
 		</div>
 
-		<div id="footer">
+		<footer id="footer" class = "page-footer text-center">
 				Made with ❤️ using WASM, Rust, Wasm_Bindgen (A Rust Package) by Kartavya Vashishtha
-		</div>
+		</footer>
 	</body>
 </html>
 
