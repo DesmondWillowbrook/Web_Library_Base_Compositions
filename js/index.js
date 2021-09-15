@@ -39,13 +39,12 @@ const wasm = import("../pkg/index").then((wasm) => {
 				});
 				if (data.ok) {
 					console.trace(data);
-					const img = document.createElement("img");
-					img.src = URL.createObjectURL(await data.blob());
-					img.onload = function() {
-						URL.revokeObjectURL(this.src);
-					}
+					const anchor = document.createElement('a');
+					anchor.href = URL.createObjectURL(await data.blob());
+					anchor.download = "composition-report.pdf";
+					anchor.innerText = "Report";
 	
-					li.appendChild(img);
+					li.appendChild(anchor);
 					status.innerText = "";
 				} else {
 					status.innerText = "Error from server response";
