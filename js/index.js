@@ -38,16 +38,21 @@ const wasm = import("../pkg/index").then((wasm) => {
 					method:"POST"
 				});
 				if (data.ok) {
-					console.trace(data);
-					const anchor = document.createElement('a');
-					anchor.href = URL.createObjectURL(await data.blob());
-					anchor.download = "composition-report.pdf";
-					anchor.innerText = "Report";
-	
-					li.appendChild(anchor);
+					let graphs = await data.json();
+					console.trace(graphs);
+
+					for (const graph of graphs) {
+						const img = document.createElement('img');
+						// w.r.t https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+						img.src = 'data:image/png;base64,'+graph;
+						li.appendChild(img);
+					}
+
 					status.innerText = "";
 				} else {
-					status.innerText = "Error from server response";
+					status.innerText = "Error from server response. Press F12 and look at console for more information.";
+					console.error(data);
+					console.error(data.text())
 					throw data;
 				}
 			}
