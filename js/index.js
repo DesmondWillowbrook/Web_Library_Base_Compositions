@@ -14,49 +14,44 @@ const wasm = import("../pkg/index").then((wasm) => {
 		document.getElementById('output-list').appendChild(li);
 
 		wasmProcess.onmessage = function (e) {
-			let output = e.data;
+			let result = e.data;
+
+			if (result.err) {
+				status.innerText = "Error encountered while processing. Press F12 for more info.";
+				throw new Error("Script panic'ed.");
+			} else {
+				async function fetch_plot (output) {
+					// Download and display graph
+					let data = await fetch ('/api/plot_comp', {
+						headers:{
+							"content-type":"application/json"
+						},
+						body:JSON.stringify(output),
+						method:"POST"
+					});
+					if (data.ok) {
+						let graphs = await data.json();
+						console.trace(graphs);
 	
-			let p = document.createElement('p');
-			p.innerText = 'JSON output:';
-
-			let json_out = document.createElement('pre');
-			json_out.innerText = JSON.stringify(output);
+						for (const graph of graphs) {
+							const img = document.createElement('img');
+							// w.r.t https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+							img.src = 'data:image/png;base64,'+graph;
+							li.appendChild(img);
+						}
 	
-			// then result_entry is appended into output list
-			li.appendChild(p);
-			p.appendChild(json_out);
-
-			status.innerText = "Waiting on server response... May take upto 5 minutes.";
-
-			async function fetch_plot (output) {
-			// Download and display graph
-				let data = await fetch ('/api/plot_comp', {
-					headers:{
-						"content-type":"application/json"
-					},
-					body:JSON.stringify(output),
-					method:"POST"
-				});
-				if (data.ok) {
-					let graphs = await data.json();
-					console.trace(graphs);
-
-					for (const graph of graphs) {
-						const img = document.createElement('img');
-						// w.r.t https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
-						img.src = 'data:image/png;base64,'+graph;
-						li.appendChild(img);
+						status.innerText = "";
+					} else {
+						status.innerText = "Error from server response. Press F12 and look at console for more information.";
+						console.error(data);
+						console.error(data.text())
+						throw data;
 					}
-
-					status.innerText = "";
-				} else {
-					status.innerText = "Error from server response. Press F12 and look at console for more information.";
-					console.error(data);
-					console.error(data.text())
-					throw data;
 				}
+				
+				status.innerText = "Waiting on server response... May take up to 5 minutes.";
+				fetch_plot(result.out);
 			}
-			fetch_plot(output);
 		}
 
 		wasmProcess.postMessage (file);

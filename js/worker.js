@@ -16,9 +16,13 @@ onmessage = async function(e) {
 		null,
 		50
 	);
-	
-	let result = JSON.parse(wasm.run_json_exported(args, "application/x-gzip" == file.type));
+	let result = {};
 
-	console.log('Posting message back to main script');
+	try {
+		result.out = JSON.parse(wasm.run_json_exported(args, "application/x-gzip" == file.type));
+	} catch (e) {
+		result.err = "Process panic'ed";
+	}
+
 	postMessage(result);
 }
